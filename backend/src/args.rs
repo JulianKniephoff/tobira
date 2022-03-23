@@ -9,6 +9,13 @@ use crate::{cmd, db::cmd::DbCommand};
 #[derive(Debug, StructOpt)]
 #[structopt(
     about = "Video portal for Opencast.",
+    version = concat!(
+        env!("VERGEN_BUILD_SEMVER"),
+        " (",
+        env!("VERGEN_GIT_SEMVER_LIGHTWEIGHT"),
+        ") from ",
+        env!("VERGEN_BUILD_TIMESTAMP"),
+    ),
     setting(structopt::clap::AppSettings::VersionlessSubcommands),
 )]
 pub(crate) struct Args {

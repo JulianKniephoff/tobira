@@ -61,7 +61,8 @@ tokio-postgres = { version = "0.7", features = ["with-chrono-0_4"] }
 toml = "0.5"
 
 
-
+[build-dependencies]
+vergen = "7.0.0"
 
 
 # Codegen options
