@@ -1,0 +1,19 @@
+name: Admin UI API Check
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Check for changes to the APIs the admin UI integration uses
+        uses: kamilkisiela/graphql-inspector@v3.2.0
+        with:
+          schema: ${{ github.head_ref }}:frontend/src/schema.graphql
+          fail-on-breaking: false
+          annotations: true
