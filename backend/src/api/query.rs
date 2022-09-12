@@ -39,12 +39,12 @@ impl Query {
     /// Paths with and without trailing slash are accepted and treated equally.
     /// The paths `""` and `"/"` refer to the root realm. All other paths have
     /// to start with `"/"`.
-    async fn realm_by_path(path: String, context: &Context) -> ApiResult<Option<Realm>> {
+    async fn realm_by_path(path: String, test: bool, context: &Context) -> ApiResult<Option<Realm>> {
         Realm::load_by_path(path, context).await
     }
 
     /// Returns an event by its Opencast ID.
-    async fn event_by_opencast_id(id: String, context: &Context) -> ApiResult<Option<Event>> {
+    async fn event_by_opencast_id(id: String, test: bool, context: &Context) -> ApiResult<Option<Event>> {
         AuthorizedEvent::load_by_opencast_id(id, context).await
     }
 
