@@ -44,7 +44,7 @@ impl Query {
     }
 
     /// Returns an event by its Opencast ID.
-    async fn event_by_opencast_id(id: String, context: &Context) -> ApiResult<Option<Event>> {
+    async fn event_by_opencast_id(id: String, test: bool, context: &Context) -> ApiResult<Option<Event>> {
         AuthorizedEvent::load_by_opencast_id(id, context).await
     }
 

@@ -392,7 +392,7 @@ type Query {
   """
   realmByPath(path: String!): Realm
   "Returns an event by its Opencast ID."
-  eventByOpencastId(id: String!): Event
+  eventByOpencastId(id: String!, test: Boolean!): Event
   "Returns an event by its ID."
   eventById(id: ID!): Event
   "Returns a series by its Opencast ID."
