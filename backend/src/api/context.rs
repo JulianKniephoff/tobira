@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use paste::paste;
 
 use crate::{
     api::err::{ApiError, ApiErrorKind, ApiResult},
@@ -21,6 +22,40 @@ pub(crate) struct Context {
 
 impl juniper::Context for Context {}
 
+macro_rules! define_require_permission_wrapper {
+    ($permission:ident, $key:expr) => {
+        paste! {
+            pub(crate) fn [<require_ $permission _permission>](&self) -> ApiResult<AuthToken> {
+                self.auth.[<require_ $permission _permission>](&self.config.auth).ok_or_else(|| {
+                    if let AuthContext::User(user) = &self.auth {
+                        ApiError {
+                            msg: format!(
+                                concat!(
+                                    "User '{}' does not have ",
+                                    stringify!($permission),
+                                    " permission",
+                                ),
+                                user.username
+                            ),
+                            kind: ApiErrorKind::NotAuthorized,
+                            key: $key.map(|key| &*format!("{key}.not-authorized")),
+                        }
+                    } else {
+                        ApiError {
+                            msg: concat!(
+                                stringify!($permission),
+                                " permission required, but user is not logged in"
+                            ).into(),
+                            kind: ApiErrorKind::NotAuthorized,
+                            key: $key.map(|key| &*format!("{key}.not-logged-in")),
+                        }
+                    }
+                })
+            }
+        }
+    }
+}
+
 impl Context {
     /// Returns a connection to the DB. Requires an auth token to prove the
     /// endpoint somehow handled authorization.
@@ -28,39 +63,8 @@ impl Context {
         &self.db
     }
 
-    pub(crate) fn require_upload_permission(&self) -> ApiResult<AuthToken> {
-        self.auth.require_upload_permission(&self.config.auth).ok_or_else(|| {
-            if let AuthContext::User(user) = &self.auth {
-                ApiError {
-                    msg: format!("User '{}' is not allowed to upload videos", user.username),
-                    kind: ApiErrorKind::NotAuthorized,
-                    key: Some("upload.not-authorized"),
-                }
-            } else {
-                ApiError {
-                    msg: "upload permission required, but user is not logged in".into(),
-                    kind: ApiErrorKind::NotAuthorized,
-                    key: Some("upload.not-logged-in"),
-                }
-            }
-        })
-    }
-
-    pub(crate) fn require_moderator_permission(&self) -> ApiResult<AuthToken> {
-        self.auth.require_moderator_permission(&self.config.auth).ok_or_else(|| {
-            if let AuthContext::User(user) = &self.auth {
-                ApiError {
-                    msg: format!("moderator required, but '{}' is not a moderator", user.username),
-                    kind: ApiErrorKind::NotAuthorized,
-                    key: Some("mutation.not-a-moderator"),
-                }
-            } else {
-                ApiError {
-                    msg: "moderator required, but user is not logged in".into(),
-                    kind: ApiErrorKind::NotAuthorized,
-                    key: Some("mutation.not-logged-in"),
-                }
-            }
-        })
-    }
+    define_require_permission_wrapper!(upload, Some("upload"));
+    define_require_permission_wrapper!(moderator, Some("mutation"));
+    define_require_permission_wrapper!(studio, None);
+    define_require_permission_wrapper!(editor, None);
 }
