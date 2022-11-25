@@ -15,7 +15,7 @@ impl BlockValue {
         block: NewTitleBlock,
         context: &Context,
     ) -> ApiResult<Realm> {
-        context.require_moderator()?;
+        context.require_moderator_permission()?;
 
         let (realm, index) = Self::prepare_realm_for_block(realm, index, context).await?;
 
@@ -38,7 +38,7 @@ impl BlockValue {
         block: NewTextBlock,
         context: &Context,
     ) -> ApiResult<Realm> {
-        context.require_moderator()?;
+        context.require_moderator_permission()?;
 
         let (realm, index) = Self::prepare_realm_for_block(realm, index, context).await?;
 
@@ -61,7 +61,7 @@ impl BlockValue {
         block: NewSeriesBlock,
         context: &Context,
     ) -> ApiResult<Realm> {
-        context.require_moderator()?;
+        context.require_moderator_permission()?;
 
         let (realm, index) = Self::prepare_realm_for_block(realm, index, context).await?;
 
@@ -88,7 +88,7 @@ impl BlockValue {
         block: NewVideoBlock,
         context: &Context,
     ) -> ApiResult<Realm> {
-        context.require_moderator()?;
+        context.require_moderator_permission()?;
 
         let (realm, index) = Self::prepare_realm_for_block(realm, index, context).await?;
 
@@ -165,7 +165,7 @@ impl BlockValue {
                 .ok_or_else(|| invalid_input!("`realm` is not a valid realm"));
         }
 
-        let db = context.db(context.require_moderator()?);
+        let db = context.db(context.require_moderator_permission()?);
 
         // The next query will swap two blocks' indices;
         // during the execution of that statement a moment will exist
@@ -244,7 +244,7 @@ impl BlockValue {
                 and type = 'title' \
                 returning {selection}",
         );
-        context.db(context.require_moderator()?)
+        context.db(context.require_moderator_permission()?)
             .query_one(&query, &[&Self::key_for(id)?, &set.content])
             .await?
             .pipe(|row| Ok(Self::from_row_start(&row)))
@@ -263,7 +263,7 @@ impl BlockValue {
                 and type = 'text' \
                 returning {selection}",
         );
-        context.db(context.require_moderator()?)
+        context.db(context.require_moderator_permission()?)
             .query_one(&query, &[&Self::key_for(id)?, &set.content])
             .await?
             .pipe(|row| Ok(Self::from_row_start(&row)))
@@ -297,7 +297,7 @@ impl BlockValue {
             &set.show_title,
             &set.show_metadata,
         ];
-        context.db(context.require_moderator()?)
+        context.db(context.require_moderator_permission()?)
             .query_one(&query, &args)
             .await?
             .pipe(|row| Ok(Self::from_row_start(&row)))
@@ -322,14 +322,14 @@ impl BlockValue {
                 and type = 'video' \
                 returning {selection}",
         );
-        context.db(context.require_moderator()?)
+        context.db(context.require_moderator_permission()?)
             .query_one(&query, &[&Self::key_for(id)?, &video_id, &set.show_title])
             .await?
             .pipe(|row| Ok(Self::from_row_start(&row)))
     }
 
     pub(crate) async fn remove(id: Id, context: &Context) -> ApiResult<RemovedBlock> {
-        let db = context.db(context.require_moderator()?);
+        let db = context.db(context.require_moderator_permission()?);
         let block_id = id.key_for(Id::BLOCK_KIND)
             .ok_or_else(|| invalid_input!("`id` does not refer to a block"))?;
 

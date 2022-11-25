@@ -11,7 +11,7 @@ use super::{Realm, RealmOrder};
 
 impl Realm {
     pub(crate) async fn add(realm: NewRealm, context: &Context) -> ApiResult<Realm> {
-        let db = context.db(context.require_moderator()?);
+        let db = context.db(context.require_moderator_permission()?);
 
         let parent_key = id_to_key(realm.parent, "`parent`")?;
 
@@ -49,7 +49,7 @@ impl Realm {
         // frontend error or the DB has changed since the user opened the
         // page. TODO: The latter case we should communicate to the user somehow.
 
-        let db = context.db(context.require_moderator()?);
+        let db = context.db(context.require_moderator_permission()?);
 
         // Verify and convert arguments.
         let parent_key = id_to_key(parent, "`parent`")?;
@@ -142,7 +142,7 @@ impl Realm {
     }
 
     pub(crate) async fn rename(id: Id, name: UpdatedRealmName, context: &Context) -> ApiResult<Realm> {
-        let db = context.db(context.require_moderator()?);
+        let db = context.db(context.require_moderator_permission()?);
         let key = id_to_key(id, "`id`")?;
         if name.plain.is_some() == name.block.is_some() {
             return Err(invalid_input!("exactly one of name.block and name.plain has to be set"));
@@ -170,7 +170,7 @@ impl Realm {
     pub(crate) async fn update(id: Id, set: UpdateRealm, context: &Context) -> ApiResult<Realm> {
         // TODO: validate input
 
-        let db = context.db(context.require_moderator()?);
+        let db = context.db(context.require_moderator_permission()?);
 
         let key = id_to_key(id, "`id`")?;
         let parent_key = set.parent.map(|parent| id_to_key(parent, "`parent`")).transpose()?;
@@ -218,7 +218,7 @@ impl Realm {
     }
 
     pub(crate) async fn remove(id: Id, context: &Context) -> ApiResult<RemovedRealm> {
-        let db = context.db(context.require_moderator()?);
+        let db = context.db(context.require_moderator_permission()?);
 
         let key = id_to_key(id, "`id`")?;
         if key.0 == 0 {

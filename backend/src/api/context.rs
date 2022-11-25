@@ -29,7 +29,7 @@ impl Context {
     }
 
     pub(crate) fn require_upload_permission(&self) -> ApiResult<AuthToken> {
-        self.auth.required_upload_permission(&self.config.auth).ok_or_else(|| {
+        self.auth.require_upload_permission(&self.config.auth).ok_or_else(|| {
             if let AuthContext::User(user) = &self.auth {
                 ApiError {
                     msg: format!("User '{}' is not allowed to upload videos", user.username),
@@ -46,8 +46,8 @@ impl Context {
         })
     }
 
-    pub(crate) fn require_moderator(&self) -> ApiResult<AuthToken> {
-        self.auth.require_moderator(&self.config.auth).ok_or_else(|| {
+    pub(crate) fn require_moderator_permission(&self) -> ApiResult<AuthToken> {
+        self.auth.require_moderator_permission(&self.config.auth).ok_or_else(|| {
             if let AuthContext::User(user) = &self.auth {
                 ApiError {
                     msg: format!("moderator required, but '{}' is not a moderator", user.username),

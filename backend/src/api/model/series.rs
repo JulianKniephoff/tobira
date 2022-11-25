@@ -52,7 +52,7 @@ impl Series {
     pub(crate) async fn load_all(context: &Context) -> ApiResult<Vec<Self>> {
         let selection = Self::select();
         let query = format!("select {selection} from series order by title");
-        context.db(context.require_moderator()?)
+        context.db(context.require_moderator_permission()?)
             .query_mapped(&query, dbargs![], |row| Self::from_row_start(&row))
             .await?
             .pipe(Ok)
@@ -95,7 +95,7 @@ impl Series {
                 values ($1, $2, 'waiting', '-infinity') \
                 returning {selection}",
         );
-        context.db(context.require_moderator()?)
+        context.db(context.require_moderator_permission()?)
             .query_one(&query, &[&series.opencast_id, &series.title])
             .await?
             .pipe(|row| Self::from_row_start(&row))

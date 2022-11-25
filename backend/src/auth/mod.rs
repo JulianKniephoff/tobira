@@ -326,19 +326,19 @@ pub(crate) trait HasRoles {
 
     /// Returns an auth token IF this user is a Tobira moderator (as determined
     /// by `config.moderator_role`).
-    fn require_moderator(&self, auth_config: &AuthConfig) -> Option<AuthToken> {
+    fn require_moderator_permission(&self, auth_config: &AuthConfig) -> Option<AuthToken> {
         AuthToken::some_if(self.is_moderator(auth_config))
     }
 
-    fn required_upload_permission(&self, auth_config: &AuthConfig) -> Option<AuthToken> {
+    fn require_upload_permission(&self, auth_config: &AuthConfig) -> Option<AuthToken> {
         AuthToken::some_if(self.can_upload(auth_config))
     }
 
-    fn required_studio_permission(&self, auth_config: &AuthConfig) -> Option<AuthToken> {
+    fn require_studio_permission(&self, auth_config: &AuthConfig) -> Option<AuthToken> {
         AuthToken::some_if(self.can_use_studio(auth_config))
     }
 
-    fn required_editor_permission(&self, auth_config: &AuthConfig) -> Option<AuthToken> {
+    fn require_editor_permission(&self, auth_config: &AuthConfig) -> Option<AuthToken> {
         AuthToken::some_if(self.can_use_editor(auth_config))
     }
 

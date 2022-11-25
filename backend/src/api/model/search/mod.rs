@@ -233,7 +233,7 @@ pub(crate) enum EventSearchOutcome {
 }
 
 pub(crate) async fn all_events(user_query: &str, context: &Context) -> ApiResult<EventSearchOutcome> {
-    context.require_moderator()?;
+    context.require_moderator_permission()?;
 
     if user_query.is_empty() {
         return Ok(EventSearchOutcome::EmptyQuery(EmptyQuery));
