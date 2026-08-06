@@ -861,7 +861,7 @@ type Realm implements Node {
     To find out why a realm has no name, you have to check `name_source`
     which gives you the raw information about the realm name.
   """
-  name: String
+  name: Int
   """
     The raw information about the name of the realm, showing where the name
     is coming from and if there is no name, why that is. Can be `null` only for the
