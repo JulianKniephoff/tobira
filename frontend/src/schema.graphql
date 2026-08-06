@@ -185,6 +185,8 @@ input RealmLineageComponent {
 input RealmSpecifier {
   name: String
   pathSegment: String!
+  "A harmless non-breaking test input field."
+  testField: String
 }
 
 input RemovedEventFromSeries {
